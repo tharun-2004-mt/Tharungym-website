@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet"/>
+
+<title>TharunGym Premium</title>
+
+<style>
+/* ===== BACKGROUND ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
+  url("https://images.unsplash.com/photo-1554284126-aa88f22d8b74");
+  background-size: cover;
+  background-position: center;
+}
+
+/* NAV */
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 50px;
+  background: rgba(0,0,0,0.7);
+}
+
+.nav__links {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.nav__links a {
+  text-decoration: none;
+  color: white;
+}
+
+.btn {
+  background: #ff4d4d;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* HEADER */
+.header__container {
+  display: flex;
+  justify-content: space-between;
+  padding: 50px;
+}
+
+/* SECTIONS */
+.section__container {
+  padding: 50px;
+  text-align: center;
+}
+
+.explore__grid, .price__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+}
+
+.explore__card, .price__card {
+  background: rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.explore__card:hover {
+  background: rgba(255,77,77,0.2);
+  border-color: #ff4d4d;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(255,77,77,0.3);
+}
+
+.join-btn {
+  background: #ff4d4d;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* INPUT */
+input {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* LOGIN MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #111;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.toggle {
+  color: #ff4d4d;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <h2 style="color:#ff4d4d;">THARUN<span style="color:white;">GYM</span></h2>
+  <ul class="nav__links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Program</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <button class="btn" onclick="openModal()">Login</button>
+</nav>
+
+<!-- HEADER -->
+<header class="header__container">
+  <div>
+    <h4 style="color:#ff4d4d;">PREMIUM FITNESS EXPERIENCE</h4>
+    <h1>BUILD YOUR DREAM BODY</h1>
+    <p>Train with the best and become the best version of yourself.</p>
+  </div>
+</header>
+
+<!-- PROGRAM -->
+<section class="section__container">
+  <h2>ELITE TRAINING PROGRAMS</h2>
+  <div class="explore__grid">
+    <div class="explore__card" onclick="showProgram('strength')">Strength Training</div>
+    <div class="explore__card" onclick="showProgram('cardio')">Cardio Fitness</div>
+    <div class="explore__card" onclick="showProgram('fatloss')">Fat Loss</div>
+    <div class="explore__card" onclick="showProgram('coaching')">Personal Coaching</div>
+  </div>
+  
+  <div id="programContent" style="margin-top:20px; color:#ff4d4d;"></div>
+</section>
+
+<!-- ML -->
+<section class="section__container">
+  <h2>AI FITNESS RECOMMENDATION</h2>
+  <input type="number" id="height" placeholder="Height (cm)">
+  <input type="number" id="weight" placeholder="Weight (kg)">
+  <br><br>
+  <button class="btn" onclick="predictFitness()">Get Plan</button>
+  <h3 id="result" style="color:#ff4d4d;"></h3>
+</section>
+
+<!-- PRICING -->
+<section class="section__container">
+  <h2>MEMBERSHIP</h2>
+  <div class="price__grid">
+    <div class="price__card" onclick="showPricing('silver')" data-price="999">Silver - ₹999/mo</div>
+    <div class="price__card" onclick="showPricing('gold')" data-price="1999">Gold - ₹1999/mo</div>
+    <div class="price__card" onclick="showPricing('platinum')" data-price="2999">Platinum - ₹2999/mo</div>
+  </div>
+  
+  <div id="pricingContent" style="margin-top:20px; color:#ff4d4d;"></div>
+</section>
+
+<!-- CONTACT FORM -->
+<section class="section__container">
+  <h2>CONTACT TRAINER</h2>
+  <div style="max-width:500px; margin:auto;">
+    <input id="contactName" placeholder="Your Name">
+    <input id="contactEmail" placeholder="Email">
+    <textarea id="contactMsg" placeholder="Message" rows="4" style="width:95%; padding:10px;"></textarea>
+    <br><br>
+    <button class="btn" onclick="sendMessage()">Send Message</button>
+  </div>
+</section>
+
+<!-- LOGIN / SIGNUP MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="formTitle">Login</h2>
+
+    <input id="name" placeholder="Name" style="display:none;">
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <br><br>
+
+    <button class="btn" onclick="submitForm()">Submit</button>
+
+    <p class="toggle" onclick="toggleForm()">Switch to Signup</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="section__container">
+  <h2 style="color:#ff4d4d;">THARUNGYM</h2>
+</footer>
+
+<script>
+// PRICING & CONTACT FEATURES
+function showPricing(type) {
+  let content = "";
+  if (type === 'silver') {
+    content = "✅ Basic Access\n✅ Group Classes\n✅ Gym Floor\n💰 ₹999/month";
+  } else if (type === 'gold') {
+    content = "✅ All Silver Features\n✅ Personal Training\n✅ Nutrition Plan\n✅ Sauna Access\n💰 ₹1,999/month";
+  } else {
+    content = "✅ Everything Included\n✅ Private Coach\n✅ Custom Diet Plan\n✅ Spa & Recovery\n💰 ₹2,999/month";
+  }
+  document.getElementById("pricingContent").innerText = content;
+}
+
+async function sendMessage() {
+  let name = document.getElementById("contactName").value;
+  let email = document.getElementById("contactEmail").value;
+  let msg = document.getElementById("contactMsg").value;
+  
+  if (!name || !email || !msg) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/contact/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message: msg })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert(data.message);
+    } else {
+      alert(data.message || 'Error sending message');
+    }
+  } catch (error) {
+    alert('Network error - Is backend running on port 5000?');
+  }
+  
+  document.getElementById("contactName").value = "";
+  document.getElementById("contactEmail").value = "";
+  document.getElementById("contactMsg").value = "";
+}
+
+// PROGRAM DISPLAY
+function showProgram(type) {
+  let content = "";
+  if (type === "strength") content = "💪 Build muscle with weights & resistance training. 12-week transformation program";
+  else if (type === "cardio") content = "🏃 Improve stamina with HIIT & endurance training. Unlimited classes";
+  else if (type === "fatloss") content = "🔥 Burn fat with cardio + calorie control. Guaranteed results";
+  else content = "👨‍🏫 Personalized coaching & custom plans. 1-on-1 attention";
+  
+  document.getElementById("programContent").innerText = content;
+}
+
+// ===== BMI =====
+function predictFitness() {
+  let height = document.getElementById("height").value;
+  let weight = document.getElementById("weight").value;
+
+  if (!height || !weight) {
+    document.getElementById("result").innerText = "Enter all values!";
+    return;
+  }
+
+  let bmi = weight / ((height/100) * (height/100));
+  let plan = bmi < 18.5 ? "Underweight 💪"
+           : bmi < 24.9 ? "Fit 🏃"
+           : "Overweight 🔥";
+
+  document.getElementById("result").innerText =
+    "BMI: " + bmi.toFixed(2) + " | " + plan;
+}
+
+// ===== MODAL =====
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+// ===== LOGIN/SIGNUP =====
+let isLogin = true;
+
+function toggleForm() {
+  isLogin = !isLogin;
+
+  document.getElementById("formTitle").innerText =
+    isLogin ? "Login" : "Signup";
+
+  document.getElementById("name").style.display =
+    isLogin ? "none" : "block";
+}
+
+async function submitForm() {
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
+  let name = document.getElementById("name").value || "";
+  
+  if (!email || !password || (!isLogin && !name)) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert(data.message);
+    } else {
+      alert(data.message || 'Error occurred');
+    }
+  } catch (error) {
+    alert('Network error - Is backend running?');
+  }
+  
+  document.getElementById("modal").style.display = "none";
+  // Reset form
+  document.getElementById("email").value = "";
+  document.getElementById("password").value = "";
+  document.getElementById("name").value = "";
+}
+</script>
+
+</body>
+</html>

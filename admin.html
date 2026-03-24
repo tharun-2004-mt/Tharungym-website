@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TharunGym Admin - MongoDB Data</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f4f4f4; }
+    .container { max-width: 1200px; margin: auto; }
+    h1 { color: #ff4d4d; }
+    .section { background: white; padding: 20px; margin: 20px 0; border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #ff4d4d; color: white; }
+    button { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    .loading { color: #ff4d4d; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗄️ TharunGym MongoDB Dashboard</h1>
+    
+    <div class="section">
+      <h2>📨 Contact Messages <span id="msgCount" class="loading">Loading...</span></h2>
+      <button onclick="loadMessages()">Refresh Messages</button>
+      <table id="messagesTable">
+        <thead>
+          <tr><th>Date</th><th>Name</th><th>Email</th><th>Message</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>👥 Users <span id="userCount" class="loading">Loading...</span></h2>
+      <button onclick="loadUsers()">Refresh Users</button>
+      <table id="usersTable">
+        <thead>
+          <tr><th>Date</th><th>Name</th><th>Email</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 30px; color: green;">
+      <strong>Data saved to MongoDB 'tharungym' database!</strong><br>
+      Messages: 'messages' collection | Users: 'users' collection<br>
+      Check terminal logs for requests. Works with local MongoDB.
+    </div>
+  </div>
+
+  <script>
+    async function loadMessages() {
+      try {
+        const res = await fetch('/api/messages');
+        const messages = await res.json();
+        const tbody = document.querySelector('#messagesTable tbody');
+        tbody.innerHTML = '';
+        messages.forEach(msg => {
+          const row = tbody.insertRow();
+          row.innerHTML = `
+            <td>${new Date(msg.createdAt).toLocaleString()}</td>
+            <td>${msg.name}</td>
+            <td>${msg.email}</td>
+            <td>${msg.message}</td>
+            <td><button onclick="deleteDoc('messages', '${msg._id}')">Delete</button></td>
+          `;
+        });
+        document.getElementById('msgCount').textContent = `(${messages.length})`;
+      } catch (e) {
+        alert('Error loading: ' + e.message);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/users');
+        const users = await res.json();
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '';
+        users.forEach(user => {
+          const row = tbody.insertRow();
+          row.innerHTML = `
+            <td>${new Date(user.createdAt).toLocaleString()}</td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.email}</td>
+            <td><button onclick="deleteDoc('users', '${user._id}')">Delete</button></td>
+          `;
+        });
+        document.getElementById('userCount').textContent = `(${users.length})`;
+      } catch (e) {
+        alert('Error loading: ' + e.message);
+      }
+    }
+
+    async function deleteDoc(collection, id) {
+      if (!confirm('Delete?')) return;
+      try {
+        await fetch(`/api/${collection}/${id}`, { method: 'DELETE' });
+        loadMessages();
+        loadUsers();
+      } catch (e) {
+        alert('Delete error: ' + e.message);
+      }
+    }
+
+    // Load on start
+    loadMessages();
+    loadUsers();
+  </script>
+</body>
+</html>
+
